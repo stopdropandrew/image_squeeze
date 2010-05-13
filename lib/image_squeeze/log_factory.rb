@@ -1,5 +1,3 @@
-require 'logger'
-
 module ImageSqueeze
   class LogFactory
     def self.logger
