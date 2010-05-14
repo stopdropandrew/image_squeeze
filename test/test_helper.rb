@@ -1,7 +1,6 @@
 require 'test/unit'
-require File.join(File.dirname(__FILE__), '..', 'lib', 'image_squeeze')
 require 'ruby-debug'
-Debugger.start
+require File.join(File.dirname(__FILE__), '..', 'lib', 'image_squeeze')
 
 class Test::Unit::TestCase
   def fixtures(filename)
