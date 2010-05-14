@@ -29,20 +29,22 @@ class ImageSqueeze
   }
   
   def initialize(options = {})
-    @image_processors = options[:image_processors]
+    @processors = options[:processors] || []
   end
   
   def self.default
-    @image_processors = self.class.default_image_processors
+    @processors = self.class.default_processors
   end
   
   def squeeze(filename)
     image_type = self.class.image_type(filename)
-    return Result.new(:filename => filename) if [UNKNOWN, NOT_FOUND].include?(image_type)
+    return if [UNKNOWN, NOT_FOUND].include?(image_type)
+    processors = @processors.select{ |processor| processor.handles?(image_type) }
+    return if processors.empty?
     
     original_file_size = File.size(filename)
     
-    @image_processors.select{ |processor| processor.handles?(image_type) }.map do |processor_class|
+    sorted_results = processors.map do |processor_class|
       output_filename = processor_class.squeeze_to_tmp(filename)
       
       output_file_size = File.size(output_filename)
@@ -50,14 +52,22 @@ class ImageSqueeze
       result_options = { :filename => filename, :output_filename => output_filename, :bytes_saved => original_file_size - output_file_size, :output_extension => processor_class.output_extension }
       
       Result.new(result_options)
-    end.sort[-1]
+    end.sort
+    
+    most_optimized = sorted_results.pop if sorted_results[-1].optimized?
+    
+    sorted_results.each do |result|
+      FileUtils.rm(result.output_filename)
+    end
+    
+    most_optimized
   end
   
   def squeeze!(filename)
     result = squeeze(filename)
     
     output_filename = filename
-    if result.optimized?
+    if result
       if File.extname(filename) != result.output_extension
         output_filename = filename.sub(Regexp.new(Regexp.escape(File.extname(filename)) + '$'), result.output_extension)
         FileUtils.cp(result.output_filename, output_filename)
@@ -73,7 +83,7 @@ class ImageSqueeze
     LogFactory.logger
   end
   
-  def self.default_image_processors
+  def self.default_processors
     ImageSqueeze::Utils.image_utility_available?('identify', 'all image', Logger::ERROR)
     ImageSqueeze::Utils.image_utility_available?('convert', 'gif', Logger::WARN)
     ImageSqueeze::Utils.image_utility_available?('gifsicle', 'animated gif', Logger::WARN)
