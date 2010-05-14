@@ -4,21 +4,21 @@ class ImageSqueeze
   class Processor
     attr_reader :filename
     
-    def initialize(filename)
-      @filename = filename
-      @tempfile = Tempfile.new(File.basename(filename))
+    def self.tmp_filename(filename)
+      t = Time.now.strftime("%Y%m%d")
+      path = "#{File.basename(filename)}#{t}-#{$$}-#{rand(0x100000000).to_s(36)}"
+         
+      File.join(Dir::tmpdir, path)
     end
     
-    def new_filename
-      @tempfile.path
+    def self.squeeze_to_tmp(filename)
+      tmp = tmp_filename(filename)
+      squeeze(filename, tmp)
+      tmp
     end
     
-    def squeeze
-      raise "Should be defined in subclass and should put a new file at @tempfile.path"
-    end
-    
-    def cleanup
-      # nothing yet
+    def self.squeeze(filename, output_filename)
+      raise "Should be defined in subclass and should convert filename to something at output_filename"
     end
   end
 end

@@ -18,8 +18,8 @@ class SqueezeTest < Test::Unit::TestCase
   
   def test_image_processors_squeeze_method_is_called
     image_squeezer = custom_image_squeezer(AlwaysOptimize, NeverOptimize)
-    AlwaysOptimize.any_instance.expects(:squeeze)
-    NeverOptimize.any_instance.expects(:squeeze)
+    AlwaysOptimize.expects(:squeeze)
+    NeverOptimize.expects(:squeeze)
     image_squeezer.squeeze(fixtures('already_optimized_gif.gif'))
   end
 
@@ -37,14 +37,14 @@ class SqueezeTest < Test::Unit::TestCase
   
   private
   class AlwaysOptimize < ImageSqueeze::Processor
-    def squeeze
-      `echo 'real small' > #{new_filename}` # this will make the new file really small
+    def self.squeeze(filename, output_filename)
+      `echo 'real small' > #{output_filename}` # this will make the new file really small
     end
   end
   
   class NeverOptimize < ImageSqueeze::Processor
-    def squeeze
-      `cp #{filename} #{new_filename}`
+    def self.squeeze(filename, output_filename)
+      `cp #{filename} #{output_filename}`
     end
   end
 
