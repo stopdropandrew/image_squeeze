@@ -39,27 +39,22 @@ class ImageSqueeze
   def squeeze(filename)
     image_type = self.class.image_type(filename)
     return if [UNKNOWN, NOT_FOUND].include?(image_type)
+
     processors = @processors.select{ |processor| processor.handles?(image_type) }
     return if processors.empty?
     
     original_file_size = File.size(filename)
-    
     sorted_results = processors.map do |processor_class|
       output_filename = processor_class.squeeze_to_tmp(filename)
-      
       output_file_size = File.size(output_filename)
-      
       result_options = { :filename => filename, :output_filename => output_filename, :bytes_saved => original_file_size - output_file_size, :output_extension => processor_class.output_extension }
-      
       Result.new(result_options)
     end.sort
     
     most_optimized = sorted_results.pop if sorted_results[-1].optimized?
-    
     sorted_results.each do |result|
       FileUtils.rm(result.output_filename)
     end
-    
     most_optimized
   end
   
