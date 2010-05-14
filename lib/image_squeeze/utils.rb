@@ -1,6 +1,6 @@
 module ImageSqueeze
-  module CheckUtilities
-    def self.available?(bin, extension, log_level = Logger::WARN)
+  module Utils
+    def self.image_utility_available?(bin, extension, log_level = Logger::WARN)
       return true if system("which #{bin}")
       if log_level >= Logger::ERROR
         ImageSqueeze.logger.error("#{bin} utility is required for running ImageSqueeze, get it installed already")

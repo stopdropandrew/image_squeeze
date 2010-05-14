@@ -2,7 +2,7 @@ $:.unshift File.dirname(__FILE__)
 
 require 'logger'
 require 'image_squeeze/log_factory'
-require 'image_squeeze/check_utilities'
+require 'image_squeeze/utils'
 require 'image_squeeze/image_identifier'
 
 module ImageSqueeze
@@ -21,9 +21,9 @@ module ImageSqueeze
   end
 end
 
-ImageSqueeze::CheckUtilities.available?('identify', 'all image', Logger::ERROR)
-ImageSqueeze::CheckUtilities.available?('convert', 'gif', Logger::WARN)
-ImageSqueeze::CheckUtilities.available?('gifsicle', 'animated gif', Logger::WARN)
-ImageSqueeze::CheckUtilities.available?('pngcrush', 'pngs and gif', Logger::WARN)
-ImageSqueeze::CheckUtilities.available?('jpegtran', 'jpeg', Logger::WARN)
+ImageSqueeze::Utils.image_utility_available?('identify', 'all image', Logger::ERROR)
+ImageSqueeze::Utils.image_utility_available?('convert', 'gif', Logger::WARN)
+ImageSqueeze::Utils.image_utility_available?('gifsicle', 'animated gif', Logger::WARN)
+ImageSqueeze::Utils.image_utility_available?('pngcrush', 'pngs and gif', Logger::WARN)
+ImageSqueeze::Utils.image_utility_available?('jpegtran', 'jpeg', Logger::WARN)
 

@@ -1,39 +1,39 @@
 require File.join(File.dirname(__FILE__), '..', 'test_helper')
 
-class ImageIdentifierTest < Test::Unit::TestCase
+class ImageTypeTest < Test::Unit::TestCase
   def test_image_type_not_found_when_no_file
-    identifier = ImageSqueeze::ImageIdentifier.new('blah.jpg')
-    assert_equal ImageSqueeze::NOT_FOUND, identifier.image_type
+    image_type = ImageSqueeze.image_type('blah.jpg')
+    assert_equal ImageSqueeze::NOT_FOUND, image_type
   end
   
-  def test_identifier_correctly_identifies_gif
-    identifier = ImageSqueeze::ImageIdentifier.new(fixtures('already_optimized_gif.gif'))
-    assert_equal ImageSqueeze::GIF, identifier.image_type
+  def test_image_type_correctly_identifies_gif
+    image_type = ImageSqueeze.image_type(fixtures('already_optimized_gif.gif'))
+    assert_equal ImageSqueeze::GIF, image_type
   end
   
-  def test_identifier_correctly_identifies_animated_gif
-    identifier = ImageSqueeze::ImageIdentifier.new(fixtures('unoptimized_animated_gif.gif'))
-    assert_equal ImageSqueeze::ANIMATED_GIF, identifier.image_type
+  def test_image_type_correctly_identifies_animated_gif
+    image_type = ImageSqueeze.image_type(fixtures('unoptimized_animated_gif.gif'))
+    assert_equal ImageSqueeze::ANIMATED_GIF, image_type
   end
 
-  def test_identifier_correctly_identifies_png
-    identifier = ImageSqueeze::ImageIdentifier.new(fixtures('already_optimized_png.png'))
-    assert_equal ImageSqueeze::PNG, identifier.image_type
+  def test_image_type_correctly_identifies_png
+    image_type = ImageSqueeze.image_type(fixtures('already_optimized_png.png'))
+    assert_equal ImageSqueeze::PNG, image_type
   end
 
-  def test_identifier_correctly_identifies_jpeg
-    identifier = ImageSqueeze::ImageIdentifier.new(fixtures('already_optimized_jpg.jpg'))
-    assert_equal ImageSqueeze::JPEG, identifier.image_type
+  def test_image_type_correctly_identifies_jpeg
+    image_type = ImageSqueeze.image_type(fixtures('already_optimized_jpg.jpg'))
+    assert_equal ImageSqueeze::JPEG, image_type
   end
   
-  def test_identifier_correctly_identifies_non_images
-    identifier = ImageSqueeze::ImageIdentifier.new(__FILE__)
-    assert_equal ImageSqueeze::UNKNOWN, identifier.image_type
+  def test_image_type_correctly_identifies_non_images
+    image_type = ImageSqueeze.image_type(__FILE__)
+    assert_equal ImageSqueeze::UNKNOWN, image_type
   end
   
-  def test_identifier_correctly_identifies_image_with_wrong_extension
-    identifier = ImageSqueeze::ImageIdentifier.new(fixtures('mislabeled_gif.png'))
-    assert_equal ImageSqueeze::GIF, identifier.image_type
+  def test_image_type_correctly_identifies_image_with_wrong_extension
+    image_type = ImageSqueeze.image_type(fixtures('mislabeled_gif.png'))
+    assert_equal ImageSqueeze::GIF, image_type
   end
   
 end
