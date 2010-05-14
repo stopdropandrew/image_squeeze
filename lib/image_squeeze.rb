@@ -16,9 +16,10 @@ module ImageSqueeze
   UNKNOWN = 'unknown'
   NOT_FOUND = 'not_found'
   
-  def self.logger
+  def logger
     LogFactory.logger
   end
+  module_function :logger
 end
 
 ImageSqueeze::Utils.image_utility_available?('identify', 'all image', Logger::ERROR)
