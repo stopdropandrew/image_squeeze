@@ -51,12 +51,17 @@ class ImageSqueeze
   def squeeze!(filename)
     result = squeeze(filename)
     
-    if File.extname(filename) != result.output_extension
-      FileUtils.cp(result.output_filename, filename.sub(Regexp.new(Regexp.escape(File.extname(filename)) + '$'), result.output_extension))
-      FileUtils.rm(filename)
-    else
-      FileUtils.cp(result.output_filename, filename)
+    output_filename = filename
+    if result.optimized?
+      if File.extname(filename) != result.output_extension
+        output_filename = filename.sub(Regexp.new(Regexp.escape(File.extname(filename)) + '$'), result.output_extension)
+        FileUtils.cp(result.output_filename, output_filename)
+        FileUtils.rm(filename)
+      else
+        FileUtils.cp(result.output_filename, filename)
+      end
     end
+    output_filename
   end
   
   def logger

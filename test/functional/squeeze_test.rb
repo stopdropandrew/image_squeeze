@@ -61,6 +61,14 @@ class SqueezeTest < Test::Unit::TestCase
     assert File.exists?(filename.gsub(/\.gif$/, '.png')), "New file should exist"
   end
   
+  def test_squeezebang_doesnt_overwrite_when_file_not_optimized
+    image_squeezer = custom_image_squeezer(AlwaysBigger)
+    filename = fixtures('already_optimized_gif.gif')
+    old_size = File.size(filename)
+    result = image_squeezer.squeeze!(filename)
+    assert_equal old_size, File.size(filename)
+  end
+  
   private
   class AlwaysOptimize < ImageSqueeze::Processor
     def self.squeeze(filename, output_filename)
@@ -75,6 +83,13 @@ class SqueezeTest < Test::Unit::TestCase
       `cp #{filename} #{output_filename}`
     end
 
+    def self.input_type; ImageSqueeze::GIF; end
+  end
+
+  class AlwaysBigger < ImageSqueeze::Processor
+    def self.squeeze(filename, output_filename)
+      `cp #{filename} #{output_filename}; echo "hi" >> #{output_filename}`
+    end
     def self.input_type; ImageSqueeze::GIF; end
   end
 
