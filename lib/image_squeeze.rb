@@ -23,12 +23,14 @@ module ImageSqueeze
   def squeeze(filename)
     image_type = image_type(filename)
     
+    new_filename = nil
     @@image_processors[image_type].each do |processor_class|
       processor = processor_class.new(filename)
       processor.squeeze
+      new_filename = processor.new_filename
     end
     
-    Result.new
+    Result.new(:filename => filename, :new_filename => new_filename)
   end
   module_function :squeeze
   
