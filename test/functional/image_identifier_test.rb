@@ -27,7 +27,7 @@ class ImageTypeTest < Test::Unit::TestCase
   end
   
   def test_image_type_correctly_identifies_non_images
-    image_type = ImageSqueeze.image_type(__FILE__)
+    image_type = ImageSqueeze.image_type(fixtures('textfile.txt'))
     assert_equal ImageSqueeze::UNKNOWN, image_type
   end
   

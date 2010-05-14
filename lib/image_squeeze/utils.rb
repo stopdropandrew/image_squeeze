@@ -1,4 +1,4 @@
-module ImageSqueeze
+class ImageSqueeze
   module Utils
     def self.image_utility_available?(bin, extension, log_level = Logger::WARN)
       return true if system("which #{bin} > /dev/null")

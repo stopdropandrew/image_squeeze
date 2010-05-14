@@ -1,7 +1,7 @@
-module ImageSqueeze
-  def image_type(filename)
+class ImageSqueeze
+  def self.image_type(filename)
     return ImageSqueeze::NOT_FOUND unless File.exist?(filename)
-    
+  
     case identified_format(filename)
     when /^GIFGIF/
       ImageSqueeze::ANIMATED_GIF
@@ -14,14 +14,11 @@ module ImageSqueeze
     else
       ImageSqueeze::UNKNOWN
     end
-      
+    
   end
-  module_function :image_type
-  
+
   private
-  def identified_format(filename)
+  def self.identified_format(filename)
     `identify -format %m #{filename} 2> /dev/null`
   end
-  module_function :identified_format
 end
-  

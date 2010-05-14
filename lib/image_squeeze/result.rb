@@ -1,4 +1,4 @@
-module ImageSqueeze
+class ImageSqueeze
   class Result
     def initialize(options = {})
       @filename = options[:filename]

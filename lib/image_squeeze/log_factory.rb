@@ -1,4 +1,4 @@
-module ImageSqueeze
+class ImageSqueeze
   class LogFactory
     def self.logger
       @logger ||= create_logger

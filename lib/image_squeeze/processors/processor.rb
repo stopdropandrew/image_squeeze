@@ -1,6 +1,6 @@
 require 'tempfile'
 
-module ImageSqueeze
+class ImageSqueeze
   class Processor
     attr_reader :filename
     

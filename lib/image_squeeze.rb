@@ -9,7 +9,7 @@ require 'image_squeeze/result'
 # processors
 require 'image_squeeze/processors/processor'
 
-module ImageSqueeze
+class ImageSqueeze
   VERSION = '0.1'
   
   # Image Types
@@ -20,11 +20,15 @@ module ImageSqueeze
   UNKNOWN = 'unknown'
   NOT_FOUND = 'not_found'
   
+  def initialize(options = {})
+    @image_processors = options[:image_processors] || self.class.default_image_processors
+  end
+  
   def squeeze(filename)
-    image_type = image_type(filename)
+    image_type = self.class.image_type(filename)
     
     new_filename = nil
-    @@image_processors[image_type].each do |processor_class|
+    @image_processors[image_type].each do |processor_class|
       processor = processor_class.new(filename)
       processor.squeeze
       new_filename = processor.new_filename
@@ -32,33 +36,17 @@ module ImageSqueeze
     
     Result.new(:filename => filename, :new_filename => new_filename)
   end
-  module_function :squeeze
   
   def logger
     LogFactory.logger
   end
-  module_function :logger
   
-  def reset_default_image_processors
-    @@image_processors = Hash.new([])
+  def self.default_image_processors
     ImageSqueeze::Utils.image_utility_available?('identify', 'all image', Logger::ERROR)
     ImageSqueeze::Utils.image_utility_available?('convert', 'gif', Logger::WARN)
     ImageSqueeze::Utils.image_utility_available?('gifsicle', 'animated gif', Logger::WARN)
     ImageSqueeze::Utils.image_utility_available?('pngcrush', 'pngs and gif', Logger::WARN)
     ImageSqueeze::Utils.image_utility_available?('jpegtran', 'jpeg', Logger::WARN)
+    Hash.new([])
   end
-  module_function :reset_default_image_processors
-  
-  def clear_image_processors
-    @@image_processors = Hash.new([])
-  end
-  module_function :clear_image_processors
-  
-  def add_image_processor(image_type, processor_class)
-    @@image_processors[image_type] ||= []
-    @@image_processors[image_type] << processor_class
-  end
-  module_function :add_image_processor
 end
-
-ImageSqueeze.reset_default_image_processors
