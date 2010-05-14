@@ -103,6 +103,6 @@ class SqueezeTest < Test::Unit::TestCase
   end
 
   def custom_image_squeezer(*processors)
-    ImageSqueeze.new(:image_processors => { ImageSqueeze::GIF => processors } )
+    ImageSqueeze.new(:image_processors => processors )
   end
 end

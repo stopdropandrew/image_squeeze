@@ -28,7 +28,11 @@ class ImageSqueeze
   }
   
   def initialize(options = {})
-    @image_processors = options[:image_processors] || self.class.default_image_processors
+    @image_processors = options[:image_processors]
+  end
+  
+  def self.default
+    @image_processors = self.class.default_image_processors
   end
   
   def squeeze(filename)
@@ -37,7 +41,7 @@ class ImageSqueeze
     
     original_file_size = File.size(filename)
     
-    @image_processors[image_type].map do |processor_class|
+    @image_processors.select{ |processor| processor.handles?(image_type) }.map do |processor_class|
       output_filename = processor_class.squeeze_to_tmp(filename)
       
       output_file_size = File.size(output_filename)
