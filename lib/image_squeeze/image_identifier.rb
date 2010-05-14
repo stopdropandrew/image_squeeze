@@ -20,7 +20,7 @@ module ImageSqueeze
   
   private
   def identified_format(filename)
-    `identify -format %m #{filename}`
+    `identify -format %m #{filename} 2> /dev/null`
   end
   module_function :identified_format
 end
