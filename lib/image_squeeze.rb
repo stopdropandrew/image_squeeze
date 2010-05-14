@@ -8,6 +8,7 @@ require 'image_squeeze/result'
 
 # processors
 require 'image_squeeze/processors/processor'
+require 'image_squeeze/processors/png_crush_processor'
 
 class ImageSqueeze
   VERSION = '0.1'
