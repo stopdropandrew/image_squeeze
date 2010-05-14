@@ -20,5 +20,14 @@ class ImageSqueeze
     def self.squeeze(filename, output_filename)
       raise "Should be defined in subclass and should convert filename to something at output_filename"
     end
+    
+    def self.input_type
+      raise "Should be defined in subclass"
+    end
+    
+    # override if you want a different output extensions
+    def self.output_extension
+      ImageSqueeze::IMAGE_TYPE_TO_EXTENSION[input_type]
+    end
   end
 end

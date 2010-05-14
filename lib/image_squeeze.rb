@@ -20,20 +20,43 @@ class ImageSqueeze
   UNKNOWN = 'unknown'
   NOT_FOUND = 'not_found'
   
+  IMAGE_TYPE_TO_EXTENSION = {
+    GIF => '.gif',
+    ANIMATED_GIF => '.gif',
+    JPEG => '.jpg',
+    PNG => '.png'
+  }
+  
   def initialize(options = {})
     @image_processors = options[:image_processors] || self.class.default_image_processors
   end
   
   def squeeze(filename)
     image_type = self.class.image_type(filename)
+    return Result.new(:filename => filename) if [UNKNOWN, NOT_FOUND].include?(image_type)
     
-    new_filename = nil
-    @image_processors[image_type].each do |processor_class|
-      new_filename = processor_class.squeeze_to_tmp(filename)
+    original_file_size = File.size(filename)
+    
+    @image_processors[image_type].map do |processor_class|
+      output_filename = processor_class.squeeze_to_tmp(filename)
+      
+      output_file_size = File.size(output_filename)
+      
+      result_options = { :filename => filename, :output_filename => output_filename, :bytes_saved => original_file_size - output_file_size, :output_extension => processor_class.output_extension }
+      
+      Result.new(result_options)
+    end.sort[-1]
+  end
+  
+  def squeeze!(filename)
+    result = squeeze(filename)
+    
+    if File.extname(filename) != result.output_extension
+      FileUtils.cp(result.output_filename, filename.sub(Regexp.new(Regexp.escape(File.extname(filename)) + '$'), result.output_extension))
+      FileUtils.rm(filename)
+    else
+      FileUtils.cp(result.output_filename, filename)
     end
-    
-    
-    Result.new(:filename => filename, :new_filename => new_filename)
   end
   
   def logger

@@ -16,13 +16,6 @@ class SqueezeTest < Test::Unit::TestCase
     assert !result.optimized?
   end
   
-  def test_image_processors_squeeze_method_is_called
-    image_squeezer = custom_image_squeezer(AlwaysOptimize, NeverOptimize)
-    AlwaysOptimize.expects(:squeeze)
-    NeverOptimize.expects(:squeeze)
-    image_squeezer.squeeze(fixtures('already_optimized_gif.gif'))
-  end
-
   def test_squeeze_result_in_unoptimized_when_no_optimization_is_made
     image_squeezer = custom_image_squeezer(NeverOptimize)
     result = image_squeezer.squeeze(fixtures('already_optimized_gif.gif'))
@@ -35,17 +28,63 @@ class SqueezeTest < Test::Unit::TestCase
     assert result.optimized?
   end
   
+  def test_squeeze_picks_the_best_result_when_processors_return_different_sizes
+    image_squeezer = custom_image_squeezer(AlwaysOptimize, NeverOptimize)
+    result = image_squeezer.squeeze(fixtures('already_optimized_gif.gif'))
+    assert result.optimized?
+  end
+  
+  def test_squeezebang_overwrites_original_file
+    image_squeezer = custom_image_squeezer(AlwaysOptimize)
+    filename = fixtures('already_optimized_gif.gif')
+    old_size = File.size(filename)
+    result = image_squeezer.squeeze!(filename)
+    
+    assert File.size(filename) < old_size
+  end
+
+  def test_squeezebang_removes_old_file_when_extension_is_changed
+    image_squeezer = custom_image_squeezer(PNGOutput)
+    filename = fixtures('already_optimized_gif.gif')
+    result = image_squeezer.squeeze!(filename)
+    
+    assert !File.exists?(filename), "Old file should be gone"
+    assert File.exists?(filename.gsub(/\.gif/, '.png')), "New file should exist"
+  end
+
+  def test_squeezebang_handles_changing_extension_when_dot_extension_is_repeated
+    image_squeezer = custom_image_squeezer(PNGOutput)
+    filename = fixtures('gif.gif.gif.gif')
+    result = image_squeezer.squeeze!(filename)
+    
+    assert !File.exists?(filename), "Old file should be gone"
+    assert File.exists?(filename.gsub(/\.gif$/, '.png')), "New file should exist"
+  end
+  
   private
   class AlwaysOptimize < ImageSqueeze::Processor
     def self.squeeze(filename, output_filename)
       `echo 'real small' > #{output_filename}` # this will make the new file really small
     end
+    
+    def self.input_type; ImageSqueeze::GIF; end
   end
   
   class NeverOptimize < ImageSqueeze::Processor
     def self.squeeze(filename, output_filename)
       `cp #{filename} #{output_filename}`
     end
+
+    def self.input_type; ImageSqueeze::GIF; end
+  end
+
+  class PNGOutput < ImageSqueeze::Processor
+    def self.squeeze(filename, output_filename)
+      `echo 'real small' > #{output_filename}` # this will make the new file really small
+    end
+    
+    def self.input_type; ImageSqueeze::GIF; end
+    def self.output_extension; '.png'; end
   end
 
   def custom_image_squeezer(*processors)
