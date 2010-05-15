@@ -1,6 +1,6 @@
 class ImageSqueeze
   class Result
-    attr_reader :output_filename, :bytes_saved, :output_extension
+    attr_reader :filename, :output_filename, :bytes_saved, :output_extension
     
     def initialize(options = {})
       @filename = options[:filename]
