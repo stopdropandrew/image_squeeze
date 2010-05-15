@@ -15,6 +15,8 @@ require 'image_squeeze/processors/gifsicle_processor'
 require 'image_squeeze/processors/gif_to_png_processor'
 
 class ImageSqueeze
+  attr_reader :processors
+  
   VERSION = '0.1'
   
   # Image Types
@@ -33,7 +35,11 @@ class ImageSqueeze
   }
   
   def initialize(options = {})
+    # identify is required
+    ImageSqueeze::Utils.image_utility_available?('identify', 'all image', Logger::ERROR)
+    
     @processors = options[:processors] || []
+    @processors += self.class.default_processors if options[:default_processors]
   end
   
   def self.default
@@ -83,11 +89,17 @@ class ImageSqueeze
   end
   
   def self.default_processors
+    processors = []
     ImageSqueeze::Utils.image_utility_available?('identify', 'all image', Logger::ERROR)
-    ImageSqueeze::Utils.image_utility_available?('convert', 'gif', Logger::WARN)
-    ImageSqueeze::Utils.image_utility_available?('gifsicle', 'animated gif', Logger::WARN)
-    ImageSqueeze::Utils.image_utility_available?('pngcrush', 'pngs and gif', Logger::WARN)
-    ImageSqueeze::Utils.image_utility_available?('jpegtran', 'jpeg', Logger::WARN)
-    Hash.new([])
+    if ImageSqueeze::Utils.image_utility_available?('pngcrush', 'pngs and gif', Logger::WARN)
+      processors << PNGCrushProcessor
+      processors << GIFToPNGProcessor if ImageSqueeze::Utils.image_utility_available?('convert', 'gif', Logger::WARN)
+    end
+    processors << GifsicleProcessor if ImageSqueeze::Utils.image_utility_available?('gifsicle', 'animated gif', Logger::WARN)
+    if ImageSqueeze::Utils.image_utility_available?('jpegtran', 'jpeg', Logger::WARN)
+      processors << JPEGTranProgressiveProcessor
+      processors << JPEGTranNonProgressiveProcessor
+    end
+    processors
   end
 end
