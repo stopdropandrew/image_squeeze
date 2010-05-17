@@ -72,14 +72,17 @@ class ImageSqueeze
     result = squeeze(filename)
     
     output_filename = filename
-    if result
-      if File.extname(filename) != result.output_extension
-        output_filename = filename.sub(Regexp.new(Regexp.escape(File.extname(filename)) + '$'), result.output_extension)
-        FileUtils.cp(result.output_filename, output_filename)
-        FileUtils.rm(filename)
-      else
-        FileUtils.cp(result.output_filename, filename)
-      end
+    output_filename = finalize_result(result) if result
+  end
+  
+  def finalize_result(result)
+    filename = output_filename = result.filename
+    if File.extname(result.filename) != result.output_extension
+      output_filename = filename.sub(Regexp.new(Regexp.escape(File.extname(result.filename)) + '$'), result.output_extension)
+      FileUtils.cp(result.output_filename, output_filename)
+      FileUtils.rm(result.filename)
+    else
+      FileUtils.cp(result.output_filename, result.filename)
     end
     output_filename
   end
