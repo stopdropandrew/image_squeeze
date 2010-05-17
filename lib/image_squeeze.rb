@@ -17,7 +17,7 @@ require 'image_squeeze/processors/gif_to_png_processor'
 class ImageSqueeze
   attr_reader :processors
   
-  VERSION = '0.1'
+  VERSION = '0.1.0'
   
   # Image Types
   GIF = 'gif'

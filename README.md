@@ -6,6 +6,8 @@ A library for automated lossless image optimization
 
 The default processors depend on ImageMagick, pngcrush, gifsicle, and jpegtran.  ImageMagick is required for all processors.
 
+    gem install image_squeeze
+
 ## Usage
 
     # set up an ImageSqueeze with the default processors
