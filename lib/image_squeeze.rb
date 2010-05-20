@@ -87,19 +87,23 @@ class ImageSqueeze
     output_filename
   end
   
-  def logger
+  def self.logger
     LogFactory.logger
+  end
+  
+  def logger
+    self.class.logger
   end
   
   def self.default_processors
     processors = []
-    ImageSqueeze::Utils.image_utility_available?('identify', 'all image', Logger::ERROR)
-    if ImageSqueeze::Utils.image_utility_available?('pngcrush', 'pngs and gif', Logger::WARN)
+    ImageSqueeze::Utils.image_utility_available?('identify', 'all image', true)
+    if ImageSqueeze::Utils.image_utility_available?('pngcrush', 'pngs and gif')
       processors << PNGCrushProcessor
-      processors << GIFToPNGProcessor if ImageSqueeze::Utils.image_utility_available?('convert', 'gif', Logger::WARN)
+      processors << GIFToPNGProcessor if ImageSqueeze::Utils.image_utility_available?('convert', 'gif')
     end
-    processors << GifsicleProcessor if ImageSqueeze::Utils.image_utility_available?('gifsicle', 'animated gif', Logger::WARN)
-    if ImageSqueeze::Utils.image_utility_available?('jpegtran', 'jpeg', Logger::WARN)
+    processors << GifsicleProcessor if ImageSqueeze::Utils.image_utility_available?('gifsicle', 'animated gif')
+    if ImageSqueeze::Utils.image_utility_available?('jpegtran', 'jpeg')
       processors << JPEGTranProgressiveProcessor
       processors << JPEGTranNonProgressiveProcessor
     end

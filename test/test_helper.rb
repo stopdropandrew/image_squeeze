@@ -1,5 +1,6 @@
 require 'test/unit'
 require 'ruby-debug'
+require 'mocha'
 require File.join(File.dirname(__FILE__), '..', 'lib', 'image_squeeze')
 
 class Test::Unit::TestCase
