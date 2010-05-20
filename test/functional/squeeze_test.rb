@@ -45,7 +45,7 @@ class SqueezeTest < Test::Unit::TestCase
     image_squeezer = custom_image_squeezer(AlwaysOptimize)
     filename = fixtures('already_optimized_gif.gif')
     old_size = File.size(filename)
-    result = image_squeezer.squeeze!(filename)
+    image_squeezer.squeeze!(filename)
     
     assert File.size(filename) < old_size
   end
@@ -53,7 +53,7 @@ class SqueezeTest < Test::Unit::TestCase
   def test_squeezebang_removes_old_file_when_extension_is_changed
     image_squeezer = custom_image_squeezer(PNGOutput)
     filename = fixtures('already_optimized_gif.gif')
-    result = image_squeezer.squeeze!(filename)
+    image_squeezer.squeeze!(filename)
     
     assert !File.exists?(filename), "Old file should be gone"
     assert File.exists?(filename.gsub(/\.gif/, '.png')), "New file should exist"
@@ -62,7 +62,7 @@ class SqueezeTest < Test::Unit::TestCase
   def test_squeezebang_handles_changing_extension_when_dot_extension_is_repeated
     image_squeezer = custom_image_squeezer(PNGOutput)
     filename = fixtures('gif.gif.gif.gif')
-    result = image_squeezer.squeeze!(filename)
+    image_squeezer.squeeze!(filename)
     
     assert !File.exists?(filename), "Old file should be gone"
     assert File.exists?(filename.gsub(/\.gif$/, '.png')), "New file should exist"
@@ -72,7 +72,7 @@ class SqueezeTest < Test::Unit::TestCase
     image_squeezer = custom_image_squeezer(AlwaysBigger)
     filename = fixtures('already_optimized_gif.gif')
     old_size = File.size(filename)
-    result = image_squeezer.squeeze!(filename)
+    image_squeezer.squeeze!(filename)
     assert_equal old_size, File.size(filename)
   end
   
