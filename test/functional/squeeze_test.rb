@@ -87,6 +87,26 @@ class SqueezeTest < Test::Unit::TestCase
     FileUtils.rm(result.output_filename) if result && result.output_filename && File.exists?(result.output_filename)
   end
   
+  def test_finalize_result_should_remove_old_file_when_extension_doesnt_change
+    image_squeezer = custom_image_squeezer(AlwaysOptimize)
+    filename = fixtures('already_optimized_gif.gif')
+    result = image_squeezer.squeeze(filename)
+
+    assert File.exists?(result.output_filename)
+    image_squeezer.finalize_result(result)
+    assert !File.exists?(result.output_filename)
+  end
+
+  def test_finalize_result_should_remove_old_file_when_extension_changes
+    image_squeezer = custom_image_squeezer(PNGOutput)
+    filename = fixtures('already_optimized_gif.gif')
+    result = image_squeezer.squeeze(filename)
+
+    assert File.exists?(result.output_filename)
+    image_squeezer.finalize_result(result)
+    assert !File.exists?(result.output_filename)
+  end
+  
   private
   class AlwaysOptimize < ImageSqueeze::Processor
     def self.squeeze(filename, output_filename)

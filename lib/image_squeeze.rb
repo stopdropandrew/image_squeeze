@@ -85,10 +85,10 @@ class ImageSqueeze
     filename = output_filename = result.filename
     if File.extname(result.filename) != result.output_extension
       output_filename = filename.sub(Regexp.new(Regexp.escape(File.extname(result.filename)) + '$'), result.output_extension)
-      FileUtils.cp(result.output_filename, output_filename)
+      FileUtils.mv(result.output_filename, output_filename)
       FileUtils.rm(result.filename)
     else
-      FileUtils.cp(result.output_filename, result.filename)
+      FileUtils.mv(result.output_filename, result.filename)
     end
     output_filename
   end
