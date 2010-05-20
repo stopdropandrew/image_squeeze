@@ -1,6 +1,8 @@
 $:.unshift File.dirname(__FILE__)
 
+require 'tempfile'
 require 'logger'
+
 require 'image_squeeze/log_factory'
 require 'image_squeeze/utils'
 require 'image_squeeze/image_identifier'
@@ -16,6 +18,7 @@ require 'image_squeeze/processors/gif_to_png_processor'
 
 class ImageSqueeze
   attr_reader :processors
+  attr_reader :tmpdir
   
   VERSION = '0.1.0'
   
@@ -40,6 +43,8 @@ class ImageSqueeze
     
     @processors = options[:processors] || []
     @processors += self.class.default_processors if options[:default_processors]
+    
+    @tmpdir = options[:tmpdir] || Dir::tmpdir
   end
   
   def self.default
@@ -55,7 +60,8 @@ class ImageSqueeze
     
     original_file_size = File.size(filename)
     sorted_results = processors.map do |processor_class|
-      output_filename = processor_class.squeeze_to_tmp(filename)
+      output_filename = tmp_filename(filename)
+      processor_class.squeeze(filename, output_filename)
       output_file_size = File.size(output_filename)
       result_options = { :filename => filename, :output_filename => output_filename, :bytes_saved => original_file_size - output_file_size, :output_extension => processor_class.output_extension }
       Result.new(result_options)
@@ -109,4 +115,13 @@ class ImageSqueeze
     end
     processors
   end
+  
+  private
+  def tmp_filename(filename)
+    t = Time.now.strftime("%Y%m%d")
+    path = "#{File.basename(filename)}#{t}-#{$$}-#{rand(0x100000000).to_s(36)}"
+       
+    File.join(tmpdir, path)
+  end
+  
 end

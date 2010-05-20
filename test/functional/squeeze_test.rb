@@ -76,6 +76,17 @@ class SqueezeTest < Test::Unit::TestCase
     assert_equal old_size, File.size(filename)
   end
   
+  def test_override_tmp_dir_stores_output_files_in_correct_location
+    tmpdir = File.join(File.dirname(__FILE__), '..', 'tmp')
+    FileUtils.mkdir_p(tmpdir)
+    image_squeezer = custom_image_squeezer(AlwaysOptimize, :tmpdir => tmpdir)
+    
+    result = image_squeezer.squeeze(fixtures('already_optimized_gif.gif'))
+    assert_equal 0, result.output_filename.index(tmpdir), "Output file should be located in tmpdir: #{tmpdir}"
+  ensure
+    FileUtils.rm(result.output_filename) if result && result.output_filename && File.exists?(result.output_filename)
+  end
+  
   private
   class AlwaysOptimize < ImageSqueeze::Processor
     def self.squeeze(filename, output_filename)
@@ -110,6 +121,8 @@ class SqueezeTest < Test::Unit::TestCase
   end
 
   def custom_image_squeezer(*processors)
-    ImageSqueeze.new(:processors => processors )
+    options = processors.last.is_a?(Hash) ? processors.pop : {}
+    
+    ImageSqueeze.new(options.merge(:processors => processors))
   end
 end
