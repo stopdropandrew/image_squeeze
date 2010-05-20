@@ -55,6 +55,7 @@ class DefaultProcessorsTest < Test::Unit::TestCase
     filename = fixtures(file)
     old_size = File.size(filename)
     new_filename = squeezer.squeeze!(filename)
-    assert File.size(new_filename) >= old_size, "New file size of #{File.size(new_filename)} should be at least as big as original of #{old_size}"
+    new_file_size = File.size(new_filename) if new_filename
+    assert new_filename.nil?, "New file size of #{new_file_size} should be at least as big as original of #{old_size}"
   end
 end
