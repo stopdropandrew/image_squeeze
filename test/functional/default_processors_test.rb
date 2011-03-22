@@ -8,6 +8,14 @@ class DefaultProcessorsTest < Test::Unit::TestCase
   def test_png_crush_processor_with_optimized_png
     assert_processor_doesnt_optimize_file(ImageSqueeze::PNGCrushProcessor, 'already_optimized_png.png')
   end
+
+  def test_optipng_processor_with_unoptimize_png
+    assert_processor_optimizes_file(ImageSqueeze::OptiPNGProcessor, 'unoptimized_png.png')
+  end
+  
+  def test_optipng_processor_with_optimized_png
+    assert_processor_doesnt_optimize_file(ImageSqueeze::OptiPNGProcessor, 'already_optimized_png.png')
+  end
   
   def test_jpegtran_progressive_processor_with_already_optimized
     assert_processor_doesnt_optimize_file(ImageSqueeze::JPEGTranProgressiveProcessor, 'already_optimized_jpg.jpg')
