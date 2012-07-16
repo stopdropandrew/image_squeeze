@@ -45,10 +45,6 @@ class DefaultProcessorsTest < Test::Unit::TestCase
     assert_processor_optimizes_file(ImageSqueeze::GIFToPNGProcessor, 'unoptimized_gif.gif')
   end
 
-  def test_gif_to_png_processor_with_already_optimized_animated_gif
-    assert_processor_doesnt_optimize_file(ImageSqueeze::GIFToPNGProcessor, 'already_optimized_gif.gif')
-  end
-  
   private
   def assert_processor_optimizes_file(processor, file)
     squeezer = ImageSqueeze.new(:processors => [processor])
