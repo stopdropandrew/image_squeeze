@@ -23,7 +23,7 @@ class ImageSqueeze
   attr_reader :processors
   attr_reader :tmpdir
   
-  VERSION = '0.1.3'
+  VERSION = '0.1.4'
   
   # Image Types
   GIF = 'gif'
