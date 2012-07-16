@@ -16,6 +16,8 @@ require 'image_squeeze/processors/jpeg_tran_non_progressive_processor'
 require 'image_squeeze/processors/gifsicle_processor'
 require 'image_squeeze/processors/gif_to_png_processor'
 require 'image_squeeze/processors/optipng_processor'
+require 'image_squeeze/processors/png_to_progressive_jpeg_processor'
+require 'image_squeeze/processors/png_to_non_progressive_jpeg_processor'
 
 class ImageSqueeze
   attr_reader :processors
@@ -114,6 +116,8 @@ class ImageSqueeze
     if ImageSqueeze::Utils.image_utility_available?('jpegtran', 'jpeg')
       processors << JPEGTranProgressiveProcessor
       processors << JPEGTranNonProgressiveProcessor
+      processors << PNGToProgressiveJPEGProcessor if ImageSqueeze::Utils.image_utility_available?('convert', 'png')
+      processors << PNGToNonProgressiveJPEGProcessor if ImageSqueeze::Utils.image_utility_available?('convert', 'png')
     end
     processors
   end

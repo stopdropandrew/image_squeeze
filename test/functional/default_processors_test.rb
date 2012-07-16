@@ -44,6 +44,14 @@ class DefaultProcessorsTest < Test::Unit::TestCase
   def test_gif_to_png_processor_with_unoptimized_gif
     assert_processor_optimizes_file(ImageSqueeze::GIFToPNGProcessor, 'unoptimized_gif.gif')
   end
+  
+  def test_png_to_progressive_jpg
+    assert_processor_optimizes_file(ImageSqueeze::PNGToProgressiveJPEGProcessor, 'better_as_jpg.png')
+  end
+
+  def test_png_to_non_progressive_jpg
+    assert_processor_optimizes_file(ImageSqueeze::PNGToProgressiveJPEGProcessor, 'better_as_jpg.png')
+  end
 
   private
   def assert_processor_optimizes_file(processor, file)
@@ -51,7 +59,7 @@ class DefaultProcessorsTest < Test::Unit::TestCase
     filename = fixtures(file)
     old_size = File.size(filename)
     new_filename = squeezer.squeeze!(filename)
-    assert File.size(new_filename) < old_size, "New file size of #{File.size(new_filename)} should be smaller than original of #{old_size}"
+    assert new_filename && File.size(new_filename) < old_size, "New file should be smaller than original of #{old_size}"
   end
   
   def assert_processor_doesnt_optimize_file(processor, file)
