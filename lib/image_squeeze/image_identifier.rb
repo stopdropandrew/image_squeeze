@@ -17,8 +17,13 @@ class ImageSqueeze
     
   end
 
+  def self.transparent?(filename)
+    `identify -format "%A %r" #{filename} 2> /dev/null`.split(' ').first == 'True'
+  end
+
   private
   def self.identified_format(filename)
     `identify -format %m #{filename} 2> /dev/null`
   end
+  
 end

@@ -46,12 +46,21 @@ class DefaultProcessorsTest < Test::Unit::TestCase
   end
   
   def test_png_to_progressive_jpg
-    assert_processor_optimizes_file(ImageSqueeze::PNGToProgressiveJPEGProcessor, 'better_as_jpg.png')
+    assert_processor_optimizes_file(ImageSqueeze::PNGToProgressiveJPEGProcessor, 'png_without_transparency.png')
+  end
+
+  def test_png_to_progressive_jpg_doesnt_convert_png_with_transparency
+    assert_processor_doesnt_optimize_file(ImageSqueeze::PNGToProgressiveJPEGProcessor, 'png_with_transparency.png')
   end
 
   def test_png_to_non_progressive_jpg
-    assert_processor_optimizes_file(ImageSqueeze::PNGToProgressiveJPEGProcessor, 'better_as_jpg.png')
+    assert_processor_optimizes_file(ImageSqueeze::PNGToNonProgressiveJPEGProcessor, 'png_without_transparency.png')
   end
+  
+  def test_png_to_non_progressive_jpg_doesnt_convert_png_with_transparency
+    assert_processor_doesnt_optimize_file(ImageSqueeze::PNGToNonProgressiveJPEGProcessor, 'png_with_transparency.png')
+  end
+
 
   private
   def assert_processor_optimizes_file(processor, file)
