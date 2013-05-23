@@ -53,6 +53,23 @@ class ImageSqueeze
   def self.default
     @processors = self.class.default_processors
   end
+
+  def squeeze_dir(path, substantial = 0)
+    puts "filename,bytes_saved,original_size,percent_savings"
+    if path.directory?
+      path.each_child {|p| squeeze_dir(p)}
+    else
+      r = squeeze(path)
+      if r
+        if r.percent_savings > substantial
+          finalize_result(r)
+          puts "#{r.filename},#{r.bytes_saved},#{r.original_size},#{r.percent_savings * 100}%"
+        else
+          #puts "No substantial savings (#{r.percent_savings * 100}%) on #{r.filename}"
+        end
+      end
+    end
+  end
   
   def squeeze(filename)
     image_type = self.class.image_type(filename)
@@ -66,7 +83,7 @@ class ImageSqueeze
       output_filename = tmp_filename(filename)
       processor_class.squeeze(filename, output_filename)
       output_file_size = File.size(output_filename)
-      result_options = { :filename => filename, :output_filename => output_filename, :bytes_saved => original_file_size - output_file_size, :output_extension => processor_class.output_extension }
+      result_options = { :filename => filename, :output_filename => output_filename, :original_size => original_file_size, :bytes_saved => original_file_size - output_file_size, :output_extension => processor_class.output_extension }
       Result.new(result_options)
     end.sort
     
