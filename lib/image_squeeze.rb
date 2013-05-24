@@ -61,7 +61,7 @@ class ImageSqueeze
 
   def squeeze_dir_recursive(path, substantial = 0.03)
     if path.directory?
-      path.each_child {|p| squeeze_dir(p)}
+      path.each_child {|p| squeeze_dir_recursive(p)}
     else
       r = squeeze(path)
       if r
