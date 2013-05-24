@@ -83,7 +83,7 @@ class ImageSqueeze
       output_filename = tmp_filename(filename)
       processor_class.squeeze(filename, output_filename)
       output_file_size = File.size(output_filename)
-      result_options = { :filename => filename, :output_filename => output_filename, :original_size => original_file_size, :bytes_saved => original_file_size - output_file_size, :output_extension => processor_class.output_extension }
+      result_options = { :processor => processor_class.to_s, :filename => filename, :output_filename => output_filename, :original_size => original_file_size, :bytes_saved => original_file_size - output_file_size, :output_extension => processor_class.output_extension }
       Result.new(result_options)
     end.sort
     
