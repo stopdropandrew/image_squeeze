@@ -54,8 +54,12 @@ class ImageSqueeze
     @processors = self.class.default_processors
   end
 
-  def squeeze_dir(path, substantial = 0)
-    #puts "filename,bytes_saved,original_size,percent_savings"
+  def squeeze_dir(path, substantial = 0.03)
+    puts "filename,output_filename,bytes_saved,original_size,percent_savings,processor"
+    squeeze_dir_recursive(path,substantial)
+  end
+
+  def squeeze_dir_recursive(path, substantial = 0.03)
     if path.directory?
       path.each_child {|p| squeeze_dir(p)}
     else
@@ -63,9 +67,9 @@ class ImageSqueeze
       if r
         if r.percent_savings > substantial
           finalize_result(r)
-          puts "#{r.filename},#{r.bytes_saved},#{r.original_size},#{r.percent_savings * 100}%"
+          puts "#{r.filename},#{r.output_filename},#{r.bytes_saved},#{r.original_size},#{r.percent_savings * 100}%,#{r.processor}"
         else
-          #puts "No substantial savings (#{r.percent_savings * 100}%) on #{r.filename}"
+          puts "-No substantial savings (#{r.percent_savings * 100}%) on #{r.filename}"
         end
       end
     end
