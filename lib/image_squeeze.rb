@@ -55,7 +55,7 @@ class ImageSqueeze
   end
 
   def squeeze_dir(path, substantial = 0)
-    puts "filename,bytes_saved,original_size,percent_savings"
+    #puts "filename,bytes_saved,original_size,percent_savings"
     if path.directory?
       path.each_child {|p| squeeze_dir(p)}
     else
