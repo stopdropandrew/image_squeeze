@@ -130,6 +130,7 @@ class ImageSqueeze
     end
     processors << OptiPNGProcessor if ImageSqueeze::Utils.image_utility_available?('optipng', 'png')
     processors << GifsicleProcessor if ImageSqueeze::Utils.image_utility_available?('gifsicle', 'animated gif')
+    processors << JpegOptimProcessor if ImageSqueeze::Utils.image_utility_available?('jpegoptim', 'jpg')
     if ImageSqueeze::Utils.image_utility_available?('jpegtran', 'jpeg')
       processors << JPEGTranProgressiveProcessor
       processors << JPEGTranNonProgressiveProcessor
