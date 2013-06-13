@@ -13,6 +13,7 @@ require 'image_squeeze/processors/processor'
 require 'image_squeeze/processors/png_crush_processor'
 require 'image_squeeze/processors/jpeg_tran_progressive_processor'
 require 'image_squeeze/processors/jpeg_tran_non_progressive_processor'
+require 'image_squeeze/processors/jpeg_optim_processor'
 require 'image_squeeze/processors/gifsicle_processor'
 require 'image_squeeze/processors/gif_to_png_processor'
 require 'image_squeeze/processors/optipng_processor'
@@ -53,6 +54,27 @@ class ImageSqueeze
   def self.default
     @processors = self.class.default_processors
   end
+
+  def squeeze_dir(path, substantial = 0.03)
+    puts "filename,output_filename,bytes_saved,original_size,percent_savings,processor"
+    squeeze_dir_recursive(path,substantial)
+  end
+
+  def squeeze_dir_recursive(path, substantial = 0.03)
+    if path.directory?
+      path.each_child {|p| squeeze_dir_recursive(p)}
+    else
+      r = squeeze(path)
+      if r
+        if r.percent_savings > substantial
+          finalize_result(r)
+          puts "#{r.filename},#{r.output_filename},#{r.bytes_saved},#{r.original_size},#{r.percent_savings * 100}%,#{r.processor}"
+        else
+          puts "-No substantial savings (#{r.percent_savings * 100}%) on #{r.filename}"
+        end
+      end
+    end
+  end
   
   def squeeze(filename)
     image_type = self.class.image_type(filename)
@@ -66,7 +88,7 @@ class ImageSqueeze
       output_filename = tmp_filename(filename)
       processor_class.squeeze(filename, output_filename)
       output_file_size = File.size(output_filename)
-      result_options = { :filename => filename, :output_filename => output_filename, :bytes_saved => original_file_size - output_file_size, :output_extension => processor_class.output_extension }
+      result_options = { :processor => processor_class.to_s, :filename => filename, :output_filename => output_filename, :original_size => original_file_size, :bytes_saved => original_file_size - output_file_size, :output_extension => processor_class.output_extension }
       Result.new(result_options)
     end.sort
     
@@ -113,6 +135,7 @@ class ImageSqueeze
     end
     processors << OptiPNGProcessor if ImageSqueeze::Utils.image_utility_available?('optipng', 'png')
     processors << GifsicleProcessor if ImageSqueeze::Utils.image_utility_available?('gifsicle', 'animated gif')
+    processors << JpegOptimProcessor if ImageSqueeze::Utils.image_utility_available?('jpegoptim', 'jpg')
     if ImageSqueeze::Utils.image_utility_available?('jpegtran', 'jpeg')
       processors << JPEGTranProgressiveProcessor
       processors << JPEGTranNonProgressiveProcessor
